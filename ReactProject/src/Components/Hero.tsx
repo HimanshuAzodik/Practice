@@ -1,15 +1,32 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./CSS/hero.css";
 import axios from "axios";
 
+type Objuser = {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  phone: number;
+  adress: never;
+  website: string;
+  company: never;
+};
+
 const Hero = () => {
   const [users, setusers] = useState([]);
-  useEffect(() => {
-    axios.get("https://jsonplaceholder.typicode.com/Users").then((res) => {
-      setusers(res.data);
-      console.log(users);
-    });
+
+  const fetchUser = useCallback(async () => {
+    const respo = await axios.get("https://jsonplaceholder.typicode.com/Users");
+    const resData = await respo.data;
+    console.log(resData);
+
+    setusers(resData);
   }, []);
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
   return (
     <div>
@@ -24,13 +41,13 @@ const Hero = () => {
           <th>PHONE</th>
         </tr>
 
-        {users.map((p, i) => (
-          <tr>
-            <td>{p.id}</td>
-            <td>{p.name}</td>
-            <td>{p.username}</td>
-            <td>{p.name}email</td>
-            <td>{p.phone}</td>
+        {users.map((u: Objuser, i: number) => (
+          <tr key={i}>
+            <td>{u.id}</td>
+            <td>{u.name}</td>
+            <td>{u.username}</td>
+            <td>{u.name}email</td>
+            <td>{u.phone}</td>
           </tr>
         ))}
       </table>
