@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Box from "@material-ui/core/Box";
@@ -22,84 +23,90 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(3),
     marginRight: theme.spacing(3),
     marginBottom: theme.spacing(2),
+    color: theme.palette.text.primary,
+    "&:hover": {
+      color: theme.palette.text.primary,
+    },
+  },
+  copy: {
+    marginTop: theme.spacing(3),
+    color: theme.palette.text.primary,
+  },
+  icon: {
+    color: theme.palette.text.primary,
+    "&:hover": {
+      color: theme.palette.text.primary,
+    },
   },
 }));
 
-export default function Footer(props) {
+function Footer({ content = {} }) {
   const classes = useStyles();
 
-  const content = {
+  const defaultContent = {
     copy: "© 2020 Pied Piper. All rights reserved.",
     link1: "Features",
     link2: "Enterprise",
     link3: "Support",
     link4: "ICO",
-    ...props.content,
   };
+
+  const finalContent = { ...defaultContent, ...content };
 
   return (
     <footer>
       <Container maxWidth="lg">
         <Box py={6} textAlign="center">
           <Box component="nav" className={classes.footerNav}>
-            <Link
-              href="#"
-              variant="body1"
-              color="textSecondary"
-              className={classes.footerLink}
-            >
-              {content["link1"]}
+            <Link href="#" variant="body1" className={classes.footerLink}>
+              {finalContent.link1}
             </Link>
-            <Link
-              href="#"
-              variant="body1"
-              color="textSecondary"
-              className={classes.footerLink}
-            >
-              {content["link2"]}
+            <Link href="#" variant="body1" className={classes.footerLink}>
+              {finalContent.link2}
             </Link>
-            <Link
-              href="#"
-              variant="body1"
-              color="textSecondary"
-              className={classes.footerLink}
-            >
-              {content["link3"]}
+            <Link href="#" variant="body1" className={classes.footerLink}>
+              {finalContent.link3}
             </Link>
-            <Link
-              href="#"
-              variant="body1"
-              color="textSecondary"
-              className={classes.footerLink}
-            >
-              {content["link4"]}
+            <Link href="#" variant="body1" className={classes.footerLink}>
+              {finalContent.link4}
             </Link>
           </Box>
           <Box mb={3}>
-            <IconButton color="textSecondary" aria-label="Twitter">
+            <IconButton className={classes.icon} aria-label="Twitter">
               <TwitterIcon />
             </IconButton>
-            <IconButton color="textSecondary" aria-label="Facebook">
+            <IconButton className={classes.icon} aria-label="Facebook">
               <FacebookIcon />
             </IconButton>
-            <IconButton color="textSecondary" aria-label="Instagram">
+            <IconButton className={classes.icon} aria-label="Instagram">
               <InstagramIcon />
             </IconButton>
-            <IconButton color="textSecondary" aria-label="LinkedIn">
+            <IconButton className={classes.icon} aria-label="LinkedIn">
               <LinkedInIcon />
             </IconButton>
           </Box>
           <Typography
-            color="textSecondary"
             component="p"
             variant="body2"
             gutterBottom={false}
             className={classes.copy}
           >
-            {content["copy"]}
+            {finalContent.copy}
           </Typography>
         </Box>
       </Container>
     </footer>
   );
 }
+
+Footer.propTypes = {
+  content: PropTypes.shape({
+    copy: PropTypes.string,
+    link1: PropTypes.string,
+    link2: PropTypes.string,
+    link3: PropTypes.string,
+    link4: PropTypes.string,
+  }),
+};
+
+export default Footer;
