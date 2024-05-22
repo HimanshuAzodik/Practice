@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -22,7 +22,55 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Form(props: any) {
+export default function Page1(props: any) {
+  interface User {
+    username: string;
+    email: string;
+    password: string;
+  }
+  const initalValue = { email: "", password: "" };
+  const [formValues, setformValues] = useState(initalValue);
+  const [formErrors, setformErrors] = useState([]);
+  const [isSubmit, setisSubmit] = useState(true);
+
+  const handleChange = (e: any) => {
+    const { name, value } = e.target;
+    setformValues({ ...formValues, [name]: value });
+    console.log(formValues);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setformErrors(validate(formValues));
+    setisSubmit(true);
+  };
+
+  useEffect(() => {
+    console.log(formErrors);
+    if (Object.keys(formErrors).length === 0 && isSubmit) {
+      console.log(formValues);
+    }
+  }, [formErrors]);
+
+  const validate = (values) => {
+    const errors = {};
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!values.email) {
+      errors.email = "email is Required";
+    } else if (!regex.test(values.email)) {
+      errors.email = "Enter a Valid Email";
+    }
+
+    if (!values.password) {
+      errors.password = "password is Required";
+    } else if (values.password < 8) {
+      errors.password = "Password Must be Greater than 4 letters";
+    } else if (values.password > 16) {
+      errors.password = "Password Must be less than 16 letters";
+    }
+    return errors;
+  };
   const classes = useStyles();
 
   const content = {
@@ -57,8 +105,9 @@ export default function Form(props: any) {
             </Typography>
           </Box>
           <Box>
-            <form noValidate>
+            <form noValidate onSubmit={handleSubmit}>
               <Grid container spacing={2}>
+                <p style={{ color: "red" }}>{formErrors.email}</p>
                 <Grid item xs={12}>
                   <TextField
                     variant="outlined"
@@ -68,8 +117,11 @@ export default function Form(props: any) {
                     id="email"
                     label="Email address"
                     autoComplete="email"
+                    value={formValues.email}
+                    onChange={handleChange}
                   />
                 </Grid>
+                <p style={{ color: "red" }}>{formErrors.password}</p>
                 <Grid item xs={12}>
                   <TextField
                     variant="outlined"
@@ -80,6 +132,8 @@ export default function Form(props: any) {
                     label="Password"
                     type="password"
                     autoComplete="current-password"
+                    value={formValues.password}
+                    onChange={handleChange}
                   />
                 </Grid>
               </Grid>
