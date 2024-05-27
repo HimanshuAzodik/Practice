@@ -45,8 +45,8 @@ export default function Mainhero(props: any) {
   const classes = useStyles();
 
   const content = {
-    "header-p1": "Lorem ipsum",
-    "header-p2": "dolor sit amet, consectetur.",
+    "header-p1": "Welcom To CODEOFF",
+    "header-p2": "THE BEST CODING PLATFORM",
     description:
       "Suspendisse aliquam tellus ante, porttitor mattis diam eleifend quis. Pellentesque pulvinar commodo eros sit amet finibus. Aenean et ornare erat. Etiam lobortis, ex sit amet finibus fermentum, nisl nunc ornare orci, vitae auctor lectus velit a ex.",
     "primary-action": "Action",

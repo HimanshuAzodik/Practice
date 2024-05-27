@@ -9,12 +9,13 @@ import Link from "@material-ui/core/Link";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
 import Avatar from "@material-ui/core/Avatar";
-
 import { blue } from "@material-ui/core/colors";
+import { setCookie } from "cookies-next"; // I
 
 import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
+import { useRouter } from "next/navigation";
 
 const useStyles = makeStyles((theme) => ({
   section: {
@@ -41,8 +42,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Page(props) {
+export default function Page(props: any) {
   const classes = useStyles();
+  const router = useRouter();
 
   const content = {
     header: "Login",
@@ -52,51 +54,87 @@ export default function Page(props) {
     ...props.content,
   };
 
-  interface User {
-    username: string;
+  interface errors {
     email: string;
     password: string;
   }
-  const initalValue = { email: "", password: "" };
-  const [formValues, setformValues] = useState(initalValue);
-  const [formErrors, setformErrors] = useState([]);
-  const [isSubmit, setisSubmit] = useState(true);
+
+  const initialValue = { email: "", password: "" };
+  const [formValues, setFormValues] = useState(initialValue);
+  const [formErrors, setFormErrors] = useState<formErrors>({});
+  const [isSubmit, setIsSubmit] = useState(false);
+
+  const IdPass = {
+    email: "him@gmail.com",
+    password: "12345678",
+  };
+  interface formErrors {
+    email?: String;
+    password?: any;
+    submit?: string;
+  }
+
+  interface IdPass {
+    email?: String;
+    password?: String;
+  }
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
-    setformValues({ ...formValues, [name]: value });
-    console.log(formValues);
+    setFormValues({ ...formValues, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
-    setformErrors(validate(formValues));
-    setisSubmit(true);
+    const errors = validate(formValues);
+    setFormErrors(errors);
+    if (Object.keys(errors).length === 0) {
+      setIsSubmit(true);
+    }
   };
 
   useEffect(() => {
-    console.log(formErrors);
-    if (Object.keys(formErrors).length === 0 && isSubmit) {
-      console.log(formValues);
+    if (isSubmit) {
+      if (
+        formValues.email === IdPass.email &&
+        formValues.password === IdPass.password
+      ) {
+        setCookie("token", "your-token-here", { maxAge: 60 * 60 * 24 });
+        router.push("/user");
+      } else {
+        setFormErrors({ submit: "Invalid Email & password !" });
+      }
     }
-  }, [formErrors]);
+  }, [
+    isSubmit,
+    formValues.email,
+    formValues.password,
+    IdPass.email,
+    IdPass.password,
+    router,
+  ]);
 
-  const validate = (values) => {
-    const errors = {};
+  interface FormValues {
+    email: string;
+    password: string;
+  }
+
+  const validate = (values: FormValues) => {
+    const errors: Partial<FormValues> = {};
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!values.email) {
-      errors.email = "email is Required";
+      errors.email = "Email is required";
     } else if (!regex.test(values.email)) {
-      errors.email = "Enter a Valid Email";
+      errors.email = "Enter a valid email";
     }
 
     if (!values.password) {
-      errors.password = "password is Required";
-    } else if (values.password < 8) {
-      errors.password = "Password must be greater than 8 letters";
-    } else if (values.password > 16) {
-      errors.password = "Password Must be less than 16 letters";
+      errors.password = "Password is required";
+    } else if (values.password.length < 8) {
+      errors.password = "Password must be greater than 8 characters";
+    } else if (values.password.length > 16) {
+      errors.password = "Password must be less than 16 characters";
     }
     return errors;
   };
